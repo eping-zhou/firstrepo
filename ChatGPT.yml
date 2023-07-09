@@ -1,0 +1,78 @@
+job_id: "CSTDAT-0000"
+s3_output_key: "CSTDAT0000_MY_JOB"
+zip_file: "CSTDAT0000_MY_JOB_YYYYMMDD.zip"
+
+################################# MFT & Notification Emails #################################
+delivery:
+  - email_notification:
+      - to: [david.blair@corelogic.com.au]
+        cc: [nicole.ng@corelogic.com.au]
+        bcc: [alexander.walker@corelogic.com.au]
+      - to: [alexander.walker@corelogic.com.au]
+        bcc: [nicole.ng@corlogic.com.au]
+    network_drive: "//bpvnap01-file26.rpdata.local/data/Data_Services/AutomatedExtracts/alexdirtest"
+    mft:
+      title: "Analytics Test Data"
+      username: "Test"
+      directory: "mft-testing"
+
+  - email_notification:
+      - to: [alexander.walker@corelogic.com.au, nicole.ng@corelogic.com.au]
+        cc: [david.blair@corelogic.com.au]
+    network_drive: "//bpvnap01-file26.rpdata.local/data/Data_Services/AutomatedExtracts/alexdirtest/v2"
+    contract_expiry: "26th November 2020"
+ 
+  - email_notification:
+      - to: [alexander.walker@corelogic.com.au, nicole.ng@corelogic.com.au]
+        cc: [david.blair@corelogic.com.au]
+    client_s3:
+      title: "Analytics On-Prem IAM User"
+      username: "analytics-market-insights-sa"
+      country: "AU"
+      location: "s3://corelogic-analytics-market-insights-claprod/nictest20210217"
+
+########################################### DATES ###########################################
+dates:
+  start_date: "2020-01-01"
+  end_date: "2020-12-31"
+ 
+########################################### OUTPUT ###########################################
+output:
+  - server: 'Athena'
+    query_files:
+      - "tests/sample_configs/query_files/athena_query0.sql"
+      - "tests/sample_configs/query_files/athena_query1.sql"
+
+  - server: 'Athena'
+    query_files:
+      - "tests/sample_configs/query_files/athena_query2.sql"
+    template_file: "tests/sample_configs/query_files/template_MMYYYY.xlsx"
+    skip_header: True
+    worksheet: "test_worksheet"
+    start_row: 2
+    start_col: 1
+    variance_limits: [1, ]
+
+  - server: 'Athena'
+    query_files:
+      - "tests/sample_configs/query_files/athena_query1.sql"
+      - "tests/sample_configs/query_files/athena_query2.sql"
+    table: data_services.cstdat0000_extract_1
+    file: CSTDAT0000_MY_JOB_1_YYYYMMDD.txt
+    delimiter: '|'
+    quotechar: '"'
+    variance_limits: [7900, 8100]
+  
+  - server: 'Athena'
+    query_files:
+      - "tests/sample_configs/query_files/api_payload_1.json"
+    table: data_services.cstdat0000_extract_2
+    file: CSTDAT0000_MY_JOB_2_YYYYMMDD.csv
+    variance_limits: [40000,]
+   
+  - server: 'Athena'
+    query_files:
+      - "tests/sample_configs/query_files/api_payload_2.json"
+    table: data_services.cstdat0000_extract_3
+    file: CSTDAT0000_MY_JOB_2_YYYYMMDD.csv
+    variance_limits: [40000,]
