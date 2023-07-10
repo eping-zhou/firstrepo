@@ -1,0 +1,44 @@
+# aws cloudformation update-stack --stack-name mystack --template-body file://aws-resources.yaml --region ap-southeast-2 --capabilities CAPABILITY_AUTO_EXPAND
+# AWS credentials and configuration
+# access_key = "AKIAS2YKINN4UQPCTSMK"
+# secret_key = "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"
+# region = "ap-southeast-2"
+AWSTemplateFormatVersion: 2010-09-09
+Transform: AWS::Serverless-2016-10-31
+
+Resources:
+  MyS3Bucket:
+    Type: AWS::S3::Bucket
+    DeletionPolicy: Retain
+    Properties: 
+      AccessControl: BucketOwnerFullControl
+      BucketName: chatgpt-yiping
+      BucketEncryption:
+        ServerSideEncryptionConfiguration:
+          - ServerSideEncryptionByDefault:
+              SSEAlgorithm: AES256
+      PublicAccessBlockConfiguration:
+        BlockPublicAcls: true
+        BlockPublicPolicy: true
+        IgnorePublicAcls: true
+        RestrictPublicBuckets: true
+      Tags:
+        - Key: Name
+          Value: !Sub '${AWS::AccountId}-chatgpt-yiping'
+        - Key: Project
+          Value: ChatGPT
+        - Key: ProdState
+          Value: !Sub '${AWS::AccountId}-env'
+
+  MyRDSInstance:
+    Type: 'AWS::RDS::DBInstance'
+    Properties:
+      AllocatedStorage: 20
+      DBInstanceIdentifier: mysqldb
+      DBName: chatgptyiping
+      DBInstanceClass: db.t2.micro
+      Engine: mysql
+      EngineVersion: '5.7'
+      MasterUsername: admin
+      MasterUserPassword: adminpassword
+      StorageType: gp2

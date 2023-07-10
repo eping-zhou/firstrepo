@@ -15,3 +15,10 @@ jobs:
 
       - name: Build Docker image
         run: docker build -t firstrepo-docker-image .
+        
+      - name: Login to Docker Hub
+        run: docker login -u yipingzhou -p QWEszxc1ping
+        
+      - name: Push Docker image to Docker Hub
+        run: docker push yipingzhou/firstrepo:latest
+

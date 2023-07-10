@@ -1,0 +1,59 @@
+# docker tag firstrepo-docker-image yipingzhou/firstrepo:latest
+# docker push yipingzhou/firstrepo:latest
+
+---
+variables:
+  CRYPTOGRAPHY_DONT_BUILD_RUST: 1
+
+  ## Deploy roles
+  DEPLOY_ROLE: arn:aws:iam::194905664377:user/ChatGPT
+
+  ## S3 Bucket for deployments
+  DEPLOY_BUCKET: arn:aws:s3:::chatgpt-yiping
+
+  ## Project & Stack name(s):
+  STACK_IAM: arn:aws:cloudformation:ap-southeast-2:194905664377:stack/mystack/9de059b0-1d4c-11ee-9995-02670a036fd6
+
+  ## Docker image
+  REGISTRY: firstrepo-docker-image
+  DOCKER_IMAGE: "firstrepo-docker-image"
+
+cache:
+  key: everything
+  paths:
+    - .pip
+
+stages:
+  - deploy
+  - docker-test
+
+
+##############################################################################
+## DEPLOY DOCKER FOR JENKINS
+docker-image:
+  stage: deploy
+  image: firstrepo-docker-image
+  when: manual
+  allow_failure: false
+  services:
+    - docker:stable-dind
+  script:
+    - docker pull ${DOCKER_IMAGE}||true
+    - >
+      docker build --pull
+      --file Dockerfile
+      --cache-from ${DOCKER_IMAGE}
+      --build-arg CI_JOB_TOKEN=${CI_JOB_TOKEN}
+      --label firstrepo-build="${CI_PROJECT_URL}/-/jobs/${CI_JOB_ID}"
+      --label firstrepo-commit="${CI_COMMIT_SHA}"
+      -t "${DOCKER_IMAGE}" .
+    - docker login -u yipingzhou -p QWEszxc1ping $REGISTRY
+    - docker push "${DOCKER_IMAGE}"
+
+test-docker:
+  stage: docker-test
+  image: ${DOCKER_IMAGE}
+  needs: [docker-image]
+  script:
+    - echo $(whoami)
+    - pip3 freeze
