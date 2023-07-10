@@ -19,5 +19,9 @@ jobs:
       - name: Login to Docker Hub
         run: docker login -u yipingzhou -p QWEszxc1ping
         
+      - name: Tag Docker image
+        run: docker tag firstrepo-docker-image yipingzhou/firstrepo:latest
+        
       - name: Push Docker image to Docker Hub
-        run: docker push firstrepo-docker-image:latest
+        run: docker push yipingzhou/firstrepo:latest
+
