@@ -8,6 +8,7 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
+    if: github.event_name == 'workflow_dispatch'
 
     steps:
       - name: Checkout code
@@ -20,5 +21,4 @@ jobs:
         run: docker login -u yipingzhou -p QWEszxc1ping
         
       - name: Push Docker image to Docker Hub
-        run: docker push yipingzhou/firstrepo:latest
-
+        run: docker push firstrepo-docker-image:latest
