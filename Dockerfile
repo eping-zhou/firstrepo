@@ -5,7 +5,7 @@ FROM python:3.9
 WORKDIR /app
 
 # Copy all Python files to the working directory
-COPY *.py ./
+# COPY *.py ./
 
 # Install required Python libraries
 RUN pip install --upgrade pip
@@ -22,4 +22,4 @@ RUN pip install sqlalchemy
 ENTRYPOINT ["python"]
 
 # Default command to run if no argument is provided
-CMD ["main.py"]
+# CMD ["main.py"]
